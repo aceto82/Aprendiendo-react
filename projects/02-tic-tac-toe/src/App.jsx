@@ -4,6 +4,7 @@ import { Square } from './components/Square'
 import { TURNS } from './constants'
 import { checkWinner, checkEndGame } from './logic/board'
 import { WinnerModal } from './components/WinnerModal'
+import { BoardGame } from './components/BoardGame'
 import './App.css'
 
 
@@ -43,21 +44,8 @@ function App() {
     <main className='board'>
       <h1>Triqui</h1>
       <button onClick={resetGame}>Reset del juego</button>
-      <section className='game'>
-        {
-          board.map((_, index) => {
-            return (
-              <Square
-                key={index}
-                index={index}
-                updateBoard={updateBoard}
-              >
-                {board[index]}
-              </Square>
-            )
-          })
-        }
-      </section>
+      
+      <BoardGame updateBoard={updateBoard} board={board}/>
 
       <section className='turn'>
         <Square isSelected={turn === TURNS.X}>{TURNS.X}</Square>
