@@ -5,19 +5,25 @@ import { TURNS } from './constants'
 import { checkWinner, checkEndGame } from './logic/board'
 import { WinnerModal } from './components/WinnerModal'
 import { BoardGame } from './components/BoardGame'
-import './App.css'
-
+import { saveGameToStorage, resetGameStorage } from './logic/storage'
 
 function App() {
-  const [board, setBoard] = useState(Array(9).fill(null))
-  const [turn, setTurn] = useState(TURNS.X)
+  const [board, setBoard] = useState(() => {
+    const boardFromStorage = window.localStorage.getItem('board')
+    return boardFromStorage ? JSON.parse(boardFromStorage) : Array(9).fill(null)
+  })
+  const [turn, setTurn] = useState(() => {
+    const turnFromStorage = window.localStorage.getItem('turn')
+    return turnFromStorage ?? TURNS.X // retorna el mismo valor ?? :O!!
+  })
   // No hay ganador cuando es null, false es que hay empate
-  const [winner, setWinner] = useState(null)  
+  const [winner, setWinner] = useState(null)
 
   const resetGame = () => {
     setBoard(Array(9).fill(null))
     setTurn(TURNS.X)
     setWinner(null)
+    resetGameStorage()
   }
 
   const updateBoard = (index) => {
@@ -30,11 +36,14 @@ function App() {
     // cambiar turno
     const newTurn = turn === TURNS.X ? TURNS.O : TURNS.X
     setTurn(newTurn)
+    // guardar aqui partida
+    saveGameToStorage({ board: newBoard, turn: newTurn })
     // revisar si hay ganador
     const newWinner = checkWinner(newBoard)
     if (newWinner) {
       confetti()
       setWinner(newWinner)
+      resetGameStorage()
     } else if (checkEndGame(newBoard)) {
       setWinner(false)
     }
@@ -44,15 +53,15 @@ function App() {
     <main className='board'>
       <h1>Triqui</h1>
       <button onClick={resetGame}>Reset del juego</button>
-      
-      <BoardGame updateBoard={updateBoard} board={board}/>
+
+      <BoardGame updateBoard={updateBoard} board={board} />
 
       <section className='turn'>
         <Square isSelected={turn === TURNS.X}>{TURNS.X}</Square>
         <Square isSelected={turn === TURNS.O}>{TURNS.O}</Square>
       </section>
 
-      <WinnerModal resetGame={resetGame} winner={winner}/>
+      <WinnerModal resetGame={resetGame} winner={winner} />
     </main>
   )
 }
