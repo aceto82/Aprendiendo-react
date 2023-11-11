@@ -39,14 +39,14 @@ function App() {
   const handleSubmit = (event) => {
     event.preventDefault()
     console.log({ search })
-    getMovies()
+    getMovies({ search })
   }
 
   const handleChange = (event) => {
     updateSearch(event.target.value)
   }
 
-  const handleSort =() => {
+  const handleSort = () => {
     setSort(!sort)
   }
 
